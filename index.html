@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Dental Shade Matching & Visualization</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🦷 AI Dental Shade Matching & Visualization</h1>
+        <div class="upload-section" id="uploadSection">
+            <div class="upload-area">
+                <input type="file" id="imageInput" class="upload-input" accept="image/*">
+                <div class="upload-content">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text">Upload Frontal Teeth Image</div>
+                    <div class="upload-subtext">Click to browse or drag and drop your image here</div>
+                </div>
+            </div>
+            <img id="imagePreview" class="image-preview" style="display: none;">
+            <button id="resetBtn" class="reset-btn" style="display: none;">Upload New Image</button>
+        </div>
+        <div class="processing" id="processing">
+            <div class="spinner"></div>
+            <p>Analyzing tooth color and matching shade...</p>
+        </div>
+        <div class="analysis-section" id="analysisSection">
+            <div class="auto-match-result">
+                <h3>🎯 Auto-Matched Shade</h3>
+                <div class="matched-shade" id="matchedShade">A2</div>
+                <div class="confidence-score">Confidence: <span id="confidenceScore">85%</span></div>
+            </div>
+            <div class="analysis-grid">
+                <div class="color-analysis">
+                    <h4>Dominant Color</h4>
+                    <div class="color-sample" id="dominantColor">#F0EAD8</div>
+                    <p id="dominantColorInfo">Primary tooth color detected</p>
+                </div>
+                <div class="color-analysis">
+                    <h4>Average Color</h4>
+                    <div class="color-sample" id="averageColor">#EDE8DC</div>
+                    <p id="averageColorInfo">Overall color balance</p>
+                </div>
+            </div>
+        </div>
+        <div class="main-content">
+            <div class="shade-guide">
+                <h2>Vita Classical Shade Guide</h2>
+                <div class="shade-grid" id="shadeGrid">
+                    <!-- Shade samples will be populated by JavaScript -->
+                </div>
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="customColor">Custom Color:</label>
+                        <input type="color" id="customColor" value="#ffffff">
+                    </div>
+                    <div class="control-group">
+                        <label for="opacity">Opacity: <span id="opacityValue">100</span>%</label>
+                        <input type="range" id="opacity" min="10" max="100" value="100">
+                    </div>
+                    <div class="control-group">
+                        <label for="brightness">Brightness: <span id="brightnessValue">100</span>%</label>
+                        <input type="range" id="brightness" min="50" max="150" value="100">
+                    </div>
+                    <div class="control-group">
+                        <label for="saturation">Saturation: <span id="saturationValue">100</span>%</label>
+                        <input type="range" id="saturation" min="50" max="150" value="100">
+                    </div>
+                </div>
+            </div>
+            <div class="visualization-area">
+                <div class="visualization-tabs">
+                    <button class="tab-button active" onclick="switchTab('3d', event)">3D Tooth Model</button>
+                    <button class="tab-button" onclick="switchTab('image', event)">Before/After Image</button>
+                </div>
+                <div id="3d-tab" class="tab-content active">
+                    <h2>3D Tooth Visualization</h2>
+                    <div class="tooth-canvas">
+                        <div class="tooth" id="tooth"></div>
+                    </div>
+                </div>
+                <div id="image-tab" class="tab-content">
+                    <h2>Before/After Comparison</h2>
+                    <div class="image-visualization" id="imageVisualization">
+                        <div class="no-image-message" id="noImageMessage">
+                            Upload an image to see before/after comparison
+                        </div>
+                        <div class="before-after-container" id="beforeAfterContainer" style="display: none;">
+                            <div class="image-half">
+                                <img id="beforeImage" src="" alt="Before">
+                                <div class="image-label">Before</div>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="image-half">
+                                <canvas id="afterImage"></canvas>
+                                <div class="image-label">After Shading</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="shade-overlay-controls" id="overlayControls" style="display: none;">
+                        <div class="overlay-control">
+                            <label for="toothOpacity">Tooth Opacity: <span id="toothOpacityValue">70</span>%</label>
+                            <input type="range" id="toothOpacity" min="30" max="100" value="70">
+                        </div>
+                        <div class="overlay-control">
+                            <label for="shadeIntensity">Shade Intensity: <span id="shadeIntensityValue">80</span>%</label>
+                            <input type="range" id="shadeIntensity" min="20" max="100" value="80">
+                        </div>
+                        <div class="overlay-control">
+                            <label for="blendMode">Blend Mode:</label>
+                            <select id="blendMode">
+                                <option value="multiply">Multiply</option>
+                                <option value="overlay">Overlay</option>
+                                <option value="soft-light">Soft Light</option>
+                                <option value="color">Color</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="shade-info">
+                    <h3>Selected Shade Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Shade Code</strong>
+                            <span id="shadeCode">A1</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Hue</strong>
+                            <span id="hueInfo">A (Reddish Brown)</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Chroma</strong>
+                            <span id="chromaInfo">1 (Low)</span>
+                        </div>
+                        <div class="info-item">
+                            <strong>Value</strong>
+                            <span id="valueInfo">Light</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tips">
+            <h3>💡 AI Shade Matching Tips</h3>
+            <ul>
+                <li><strong>Image Quality:</strong> Use high-resolution images with good lighting</li>
+                <li><strong>Focus Area:</strong> Ensure frontal teeth are clearly visible and in focus</li>
+                <li><strong>Lighting:</strong> Natural daylight photos work best for accurate color analysis</li>
+                <li><strong>Background:</strong> Neutral backgrounds help improve color detection accuracy</li>
+                <li><strong>Multiple Angles:</strong> Try different photos for comparison if needed</li>
+                <li><strong>Manual Override:</strong> You can still manually select shades if needed</li>
+            </ul>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html> 
